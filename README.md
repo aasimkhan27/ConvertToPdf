@@ -23,6 +23,9 @@ A production-oriented Windows (.NET Framework 4.8.1) console application that co
 
 ## Excel Interop reference / NuGet setup
 This project references:
+- `Microsoft.Office.Interop.Excel` (primary converter)
+- `ClosedXML` (fallback `.xlsx` reader)
+- `PdfSharp` (fallback basic PDF table renderer)
 - `Microsoft.Office.Interop.Excel` (NuGet package)
 
 If you need to add it manually in Visual Studio:
@@ -70,6 +73,11 @@ SpreadsheetToPdf.exe "C:\Files\data.csv" "C:\Files\data.pdf"
 - Depends on COM automation, so server-side unattended usage needs careful operational controls.
 - Output fidelity can vary slightly by Excel version, installed fonts, printer defaults, and regional settings.
 - Not cross-platform; this implementation is Windows-only by design.
+
+## Fallback mode (when Excel is unavailable)
+- If Excel Interop cannot start and the input is `.xlsx`, the app automatically falls back to a basic converter.
+- Fallback mode preserves data and produces readable table output but **does not preserve full Excel print/layout fidelity**.
+- Fallback mode is not used for `.xls` or `.csv`; those still require Excel Interop.
 
 ## Why Excel Interop is best for highest spreadsheet-to-PDF accuracy
 Excel Interop uses Excel's own rendering and print/export engine. That means PDF output follows how Excel itself interprets workbook layout, formatting, print areas, merged regions, pagination, fonts, and styling. Generic spreadsheet libraries can be excellent for data processing, but they often reimplement rendering behavior and may not match Excel's print fidelity for complex real-world workbooks.

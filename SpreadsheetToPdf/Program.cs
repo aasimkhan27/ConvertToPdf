@@ -27,6 +27,7 @@ namespace SpreadsheetToPdf
                     Directory.CreateDirectory(outputDirectory);
                 }
 
+                ConvertWithPreferredPath(request);
                 using (var converter = new ExcelPdfConverter())
                 {
                     converter.Convert(request);
@@ -69,6 +70,31 @@ namespace SpreadsheetToPdf
             {
                 Console.Error.WriteLine($"Unexpected failure: {ex.Message}");
                 return ExitCodes.UnexpectedError;
+            }
+        }
+
+        private static void ConvertWithPreferredPath(ConversionRequest request)
+        {
+            try
+            {
+                using (var converter = new ExcelPdfConverter())
+                {
+                    converter.Convert(request);
+                }
+            }
+            catch (ExcelNotInstalledException)
+            {
+                SpreadsheetFileType inputType = FileTypeDetector.Detect(request.InputPath);
+                if (inputType != SpreadsheetFileType.Xlsx)
+                {
+                    throw;
+                }
+
+                Console.WriteLine("Microsoft Excel is not available. Falling back to basic XLSX-to-PDF conversion.");
+                Console.WriteLine("Warning: fallback mode has lower layout fidelity than Excel Interop.");
+
+                var fallbackConverter = new XlsxFallbackPdfConverter();
+                fallbackConverter.Convert(request);
             }
         }
     }
