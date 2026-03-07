@@ -1,87 +1,67 @@
-# ConvertToPdf
+# ConvertToPdf - ASP.NET Web API (.NET Framework 4.8.1)
 
-## SpreadsheetToPdf (.NET Framework 4.8.1)
+This project is now an **ASP.NET Web API** service (Windows, .NET Framework 4.8.1) for converting spreadsheet files to PDF.
 
-A production-oriented Windows (.NET Framework 4.8.1) console application that converts spreadsheet files to PDF using **Microsoft Excel Interop** for maximum layout fidelity.
+## Conversion behavior
+- **Primary path (preferred):** Microsoft Excel Interop (`ExportAsFixedFormat`) for highest fidelity.
+- **Fallback path:** if Excel is not installed and input is `.xlsx`, the API uses:
+  - ClosedXML to read worksheet data
+  - PdfSharp to render a basic table PDF
+  - lower fidelity than Excel Interop (data-focused output)
 
-### Features
-- Converts `.xlsx`, `.xls`, and `.csv` to `.pdf`.
-- Uses Excel's built-in `ExportAsFixedFormat` engine for high-accuracy output.
-- Preserves workbook rendering details as Excel prints them (including merged cells, formatting, borders, fonts, colors, and print layout).
-- Supports exporting:
-  - all worksheets, or
-  - a specific worksheet by name.
-- Detects CSV delimiter from sampled content and imports with Excel before exporting.
-- Handles robust error scenarios with user-friendly messages and explicit exit codes.
-- Uses defensive COM cleanup to reduce orphaned `Excel.exe` processes.
-- Includes an optional automatic fallback path for `.xlsx` when Excel is not installed:
-  - reads workbook data via ClosedXML
-  - renders a basic table PDF via PdfSharp
-  - clearly lower fidelity than Excel Interop (structure/data-focused output)
+Supported inputs:
+- `.xlsx`
+- `.xls`
+- `.csv`
+
+Output:
+- `.pdf`
+
+## API endpoints
+### Health check
+- `GET /api/conversion/health`
+
+### Convert to PDF
+- `POST /api/conversion/pdf`
+- Content type: `multipart/form-data`
+- Form fields:
+  - `file` (required): spreadsheet file
+  - `worksheetName` (optional): specific worksheet name
+
+Response:
+- `200 OK` with PDF bytes (`application/pdf`)
+- Response headers:
+  - `X-Used-Fallback: true|false`
+  - `X-Conversion-Message: ...`
+
+## Example request (curl)
+```bash
+curl -X POST "http://localhost:port/api/conversion/pdf" \
+  -F "file=@C:/Files/report.xlsx" \
+  -F "worksheetName=Sheet1" \
+  --output report.pdf
+```
 
 ## Prerequisites
-1. **Windows OS**.
-2. **Microsoft Excel installed** (desktop version with COM automation support).
-3. **Visual Studio 2022** (or compatible version that supports .NET Framework 4.8.1).
-4. **.NET Framework Developer Pack 4.8.1** installed.
+1. Windows
+2. Visual Studio 2022 (or compatible)
+3. .NET Framework 4.8.1 Developer Pack
+4. Microsoft Excel installed (for highest fidelity primary converter)
 
-## Excel Interop reference / NuGet setup
-This project references:
-- `Microsoft.Office.Interop.Excel` (primary converter)
-- `ClosedXML` (fallback `.xlsx` reader)
-- `PdfSharp` (fallback basic PDF table renderer)
-- `Microsoft.Office.Interop.Excel` (NuGet package)
+## NuGet packages
+- Microsoft.Office.Interop.Excel
+- Microsoft.AspNet.WebApi
+- Microsoft.AspNet.WebApi.Core
+- Microsoft.AspNet.WebApi.WebHost
+- ClosedXML
+- PdfSharp
 
-If you need to add it manually in Visual Studio:
-1. Right-click project → **Manage NuGet Packages**.
-2. Search for `Microsoft.Office.Interop.Excel`.
-3. Install the package into the `SpreadsheetToPdf` project.
-
-Alternatively using Package Manager Console:
-```powershell
-Install-Package Microsoft.Office.Interop.Excel -Version 15.0.4795.1001
-```
-
-## Build in Visual Studio
+## Build and run (Visual Studio)
 1. Open `SpreadsheetToPdf.sln`.
-2. Ensure configuration is set to **Release** (or Debug).
-3. Build solution (**Build → Build Solution**).
-4. Output executable is generated under:
-   - `SpreadsheetToPdf\bin\Release\SpreadsheetToPdf.exe`
+2. Restore NuGet packages.
+3. Build solution.
+4. Run with IIS Express or local IIS.
+5. Call `GET /api/conversion/health` to verify service startup.
 
-## Command-line usage
-```powershell
-SpreadsheetToPdf.exe "C:\Files\report.xlsx" "C:\Files\report.pdf"
-SpreadsheetToPdf.exe "C:\Files\report.xls" "C:\Files\report.pdf" "Sheet1"
-SpreadsheetToPdf.exe "C:\Files\data.csv" "C:\Files\data.pdf"
-```
-
-### Arguments
-1. `input file path` (`.xlsx`, `.xls`, `.csv`)
-2. `output pdf path` (`.pdf`)
-3. optional worksheet name (if provided, only that worksheet is exported)
-
-## Exit codes
-- `0` success
-- `1` invalid arguments
-- `2` input file not found
-- `3` invalid / unsupported format
-- `4` Excel not installed / cannot start Excel Interop
-- `5` worksheet not found
-- `6` access denied
-- `7` Excel COM/interoperability failure
-- `99` unexpected failure
-
-## Limitations of relying on Microsoft Excel
-- Requires Excel to be installed on the machine running the app.
-- Depends on COM automation, so server-side unattended usage needs careful operational controls.
-- Output fidelity can vary slightly by Excel version, installed fonts, printer defaults, and regional settings.
-- Not cross-platform; this implementation is Windows-only by design.
-
-## Fallback mode (when Excel is unavailable)
-- If Excel Interop cannot start and the input is `.xlsx`, the app automatically falls back to a basic converter.
-- Fallback mode preserves data and produces readable table output but **does not preserve full Excel print/layout fidelity**.
-- Fallback mode is not used for `.xls` or `.csv`; those still require Excel Interop.
-
-## Why Excel Interop is best for highest spreadsheet-to-PDF accuracy
-Excel Interop uses Excel's own rendering and print/export engine. That means PDF output follows how Excel itself interprets workbook layout, formatting, print areas, merged regions, pagination, fonts, and styling. Generic spreadsheet libraries can be excellent for data processing, but they often reimplement rendering behavior and may not match Excel's print fidelity for complex real-world workbooks.
+## Why Excel Interop remains preferred
+Excel Interop uses Excel's native rendering and print engine, so merged cells, formatting, pagination, print areas, and sheet layout are preserved much more accurately than generic library-only rendering.
