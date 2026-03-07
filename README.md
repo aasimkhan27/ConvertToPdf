@@ -30,6 +30,7 @@ This project references:
 - `Microsoft.Office.Interop.Excel` (primary converter)
 - `ClosedXML` (fallback `.xlsx` reader)
 - `PdfSharp` (fallback basic PDF table renderer)
+- `Microsoft.Office.Interop.Excel` (NuGet package)
 
 If you need to add it manually in Visual Studio:
 1. Right-click project → **Manage NuGet Packages**.
