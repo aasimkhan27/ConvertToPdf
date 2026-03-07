@@ -155,7 +155,7 @@ namespace SpreadsheetToPdf
             }
 
             // ClosedXML keeps formatted display values through GetFormattedString().
-            return cell.GetFormattedString(CultureInfo.CurrentCulture);
+            return cell.GetFormattedString();
         }
 
         private static string ClipToLength(string value, int maxLength)
