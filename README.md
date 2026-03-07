@@ -68,6 +68,17 @@ Excel Interop uses Excel's native rendering and print engine, so merged cells, f
 
 ## Visual Studio startup fix
 If Visual Studio shows **"A project with an output type of class library cannot be started directly"**:
+1. Right-click `SpreadsheetToPdf` project → **Set as Startup Project**.
+2. In project properties, go to **Web** tab and use **IIS Express** as the Start Action.
+3. Press F5 again.
+
+Note: Web API projects intentionally use `OutputType=Library`; they are hosted by IIS/IIS Express, not started like console executables.
+
+## Build fix for "The application for the project is not installed"
+If Visual Studio shows this error, it usually means the IDE is trying to load an unsupported project flavor.
+This repository now uses the standard C# project type GUID (instead of legacy Web Application flavor GUID) so it can build without requiring that specific project subtype installation.
+
+If you still want IIS Express debugging in Visual Studio, install the **ASP.NET and web development** workload.
 1. Ensure the solution project type is **ASP.NET Web Application** (already configured in this repo).
 2. Right-click `SpreadsheetToPdf` project → **Set as Startup Project**.
 3. In project properties, go to **Web** tab and use **IIS Express** as the Start Action.
