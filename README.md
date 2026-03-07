@@ -79,3 +79,9 @@ If Visual Studio shows this error, it usually means the IDE is trying to load an
 This repository now uses the standard C# project type GUID (instead of legacy Web Application flavor GUID) so it can build without requiring that specific project subtype installation.
 
 If you still want IIS Express debugging in Visual Studio, install the **ASP.NET and web development** workload.
+1. Ensure the solution project type is **ASP.NET Web Application** (already configured in this repo).
+2. Right-click `SpreadsheetToPdf` project → **Set as Startup Project**.
+3. In project properties, go to **Web** tab and use **IIS Express** as the Start Action.
+4. Press F5 again.
+
+Note: Web API projects intentionally use `OutputType=Library`; they are hosted by IIS/IIS Express, not started like console executables.
