@@ -28,6 +28,10 @@ namespace SpreadsheetToPdf
                 }
 
                 ConvertWithPreferredPath(request);
+                using (var converter = new ExcelPdfConverter())
+                {
+                    converter.Convert(request);
+                }
 
                 Console.WriteLine("Conversion completed successfully.");
                 return ExitCodes.Success;

@@ -14,10 +14,6 @@ A production-oriented Windows (.NET Framework 4.8.1) console application that co
 - Detects CSV delimiter from sampled content and imports with Excel before exporting.
 - Handles robust error scenarios with user-friendly messages and explicit exit codes.
 - Uses defensive COM cleanup to reduce orphaned `Excel.exe` processes.
-- Includes an optional automatic fallback path for `.xlsx` when Excel is not installed:
-  - reads workbook data via ClosedXML
-  - renders a basic table PDF via PdfSharp
-  - clearly lower fidelity than Excel Interop (structure/data-focused output)
 
 ## Prerequisites
 1. **Windows OS**.
@@ -30,6 +26,7 @@ This project references:
 - `Microsoft.Office.Interop.Excel` (primary converter)
 - `ClosedXML` (fallback `.xlsx` reader)
 - `PdfSharp` (fallback basic PDF table renderer)
+- `Microsoft.Office.Interop.Excel` (NuGet package)
 
 If you need to add it manually in Visual Studio:
 1. Right-click project → **Manage NuGet Packages**.
