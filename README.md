@@ -65,3 +65,12 @@ curl -X POST "http://localhost:port/api/conversion/pdf" \
 
 ## Why Excel Interop remains preferred
 Excel Interop uses Excel's native rendering and print engine, so merged cells, formatting, pagination, print areas, and sheet layout are preserved much more accurately than generic library-only rendering.
+
+## Visual Studio startup fix
+If Visual Studio shows **"A project with an output type of class library cannot be started directly"**:
+1. Ensure the solution project type is **ASP.NET Web Application** (already configured in this repo).
+2. Right-click `SpreadsheetToPdf` project → **Set as Startup Project**.
+3. In project properties, go to **Web** tab and use **IIS Express** as the Start Action.
+4. Press F5 again.
+
+Note: Web API projects intentionally use `OutputType=Library`; they are hosted by IIS/IIS Express, not started like console executables.
