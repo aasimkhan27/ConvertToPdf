@@ -27,3 +27,9 @@ Solution contains **two projects**:
 ## Notes
 - Keep **Excel Interop** installed on the host machine for best PDF fidelity.
 - Fallback mode is lower fidelity and is used only for `.xlsx` when Excel is unavailable.
+
+## Visual Studio 2022 "project unavailable" fix
+If `SpreadsheetToPdf` appears as **Unavailable** in Visual Studio 2022, this is usually caused by missing legacy Web Application project flavor support.
+This repository now uses the standard C# project type metadata so it can load even without that legacy flavor registration.
+
+If you also want IIS Express debugging tooling, install the **ASP.NET and web development** workload in Visual Studio Installer.
