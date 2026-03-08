@@ -3,7 +3,6 @@ using System.Configuration;
 using System.Web.Http;
 using System.Web.Http.SelfHost;
 using SpreadsheetToPdf.App_Start;
-using System.IO;
 
 namespace SpreadsheetToPdf
 {

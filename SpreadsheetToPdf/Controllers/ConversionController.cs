@@ -5,8 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using SpreadsheetToPdf.Models;
-using SpreadsheetToPdf.Services;
+using SpreadsheetToPdf.Core;
 
 namespace SpreadsheetToPdf.Controllers
 {
@@ -47,11 +46,7 @@ namespace SpreadsheetToPdf.Controllers
                     if (string.Equals(contentDispositionName, "worksheetName", StringComparison.OrdinalIgnoreCase))
                     {
                         worksheetName = (await content.ReadAsStringAsync()).Trim();
-                        if (string.IsNullOrWhiteSpace(worksheetName))
-                        {
-                            worksheetName = null;
-                        }
-
+                        worksheetName = string.IsNullOrWhiteSpace(worksheetName) ? null : worksheetName;
                         continue;
                     }
 
@@ -64,8 +59,7 @@ namespace SpreadsheetToPdf.Controllers
 
                 if (fileContent == null)
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest,
-                        "Missing 'file' form-data part.");
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Missing 'file' form-data part.");
                 }
 
                 byte[] fileBytes = await fileContent.ReadAsByteArrayAsync();
@@ -74,16 +68,13 @@ namespace SpreadsheetToPdf.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Uploaded file is empty.");
                 }
 
-                originalFileName = string.IsNullOrWhiteSpace(originalFileName)
-                    ? "upload.xlsx"
-                    : Path.GetFileName(originalFileName);
-
+                originalFileName = string.IsNullOrWhiteSpace(originalFileName) ? "upload.xlsx" : Path.GetFileName(originalFileName);
                 tempInputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + Path.GetExtension(originalFileName));
                 File.WriteAllBytes(tempInputPath, fileBytes);
 
-                ConversionResponseDto result = _conversionService.ConvertToPdf(tempInputPath, worksheetName);
+                ConversionResult result = _conversionService.ConvertToPdf(tempInputPath, worksheetName);
 
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK)
+                var response = new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new ByteArrayContent(result.Content)
                 };
@@ -95,7 +86,6 @@ namespace SpreadsheetToPdf.Controllers
                 };
                 response.Headers.Add("X-Used-Fallback", result.UsedFallback.ToString());
                 response.Headers.Add("X-Conversion-Message", result.Message);
-
                 return response;
             }
             catch (WorksheetNotFoundException ex)
@@ -139,7 +129,6 @@ namespace SpreadsheetToPdf.Controllers
             }
             catch
             {
-                // Ignore cleanup errors.
             }
         }
     }
