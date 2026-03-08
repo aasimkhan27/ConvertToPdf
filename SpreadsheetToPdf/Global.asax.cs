@@ -1,5 +1,6 @@
 using System.Web;
 using System.Web.Http;
+using SpreadsheetToPdf.App_Start;
 
 namespace SpreadsheetToPdf
 {
@@ -7,7 +8,7 @@ namespace SpreadsheetToPdf
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(App_Start.WebApiConfig.Register);
+            GlobalConfiguration.Configure(WebApiConfig.Register);
         }
     }
 }

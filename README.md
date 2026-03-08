@@ -1,15 +1,15 @@
 # ConvertToPdf
 
-Solution now contains **two projects**:
+Solution contains **two projects**:
 
 1. **`SpreadsheetToPdf.Core`** (Class Library, .NET Framework 4.8.1)
    - Contains spreadsheet-to-PDF conversion logic.
    - Primary converter: Excel Interop (`Microsoft.Office.Interop.Excel`) for highest fidelity.
    - Optional fallback for `.xlsx`: ClosedXML + PdfSharp (lower fidelity).
 
-2. **`SpreadsheetToPdf`** (Web API Self-Host EXE, .NET Framework 4.8.1)
-   - Hosts HTTP endpoints and references `SpreadsheetToPdf.Core`.
-   - Starts directly in Visual Studio (no IIS project startup required).
+2. **`SpreadsheetToPdf`** (**plain ASP.NET Web API** project, .NET Framework 4.8.1)
+   - IIS/IIS Express-hosted Web API project (not self-host).
+   - References `SpreadsheetToPdf.Core` and exposes HTTP endpoints.
 
 ## API endpoints
 - `GET /api/conversion/health`
@@ -21,8 +21,8 @@ Solution now contains **two projects**:
 1. Open `SpreadsheetToPdf.sln`.
 2. Restore NuGet packages.
 3. Set startup project to **`SpreadsheetToPdf`**.
-4. Run (F5).
-5. Call `http://localhost:5000/api/conversion/health`.
+4. Run with **IIS Express** (F5).
+5. Call `<base-url>/api/conversion/health`.
 
 ## Notes
 - Keep **Excel Interop** installed on the host machine for best PDF fidelity.
